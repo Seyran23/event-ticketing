@@ -7,8 +7,10 @@ authors = []
 requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.19.1",
+    "argon2-cffi>=25.1.0",
     "arq>=0.28.0",
     "asyncpg>=0.31.0",
+    "email-validator>=2.3.0",
     "fastapi>=0.141.1",
     "httpx>=0.28.1",
     "passlib[bcrypt]>=1.7.4",
@@ -22,10 +24,26 @@ dependencies = [
     "uvicorn[standard]>=0.52.4",
 ]
 
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["alembic/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI's DI system relies on `Depends(...)` (and similar) as a default
+# argument -- that's the pattern itself, not the mutable-default footgun B008
+# exists to catch. Without this, every `Depends(...)` default in the project
+# (there will be many) trips B008.
+extend-immutable-calls = ["fastapi.Depends", "fastapi.params.Depends"]
+
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
     "respx>=0.23.1",
+    "ruff>=0.16.5",
     "testcontainers>=4.15.0",
 ]
