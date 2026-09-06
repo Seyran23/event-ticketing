@@ -10,7 +10,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8, max_length=64)
 
-    @field_validator("password")    
+    @field_validator("password")
     def validate_password(cls, value: str) -> str:
         """Validate password."""
         if not any(char.isupper() for char in value):
@@ -28,6 +28,7 @@ class UserResponse(BaseModel):
     id: UUID
     email: EmailStr
     role: Role
+    must_change_password: bool
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
