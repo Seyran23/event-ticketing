@@ -33,11 +33,11 @@ extend-exclude = ["alembic/versions"]
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.ruff.lint.flake8-bugbear]
-# FastAPI's DI system relies on `Depends(...)` (and similar) as a default
-# argument -- that's the pattern itself, not the mutable-default footgun B008
-# exists to catch. Without this, every `Depends(...)` default in the project
-# (there will be many) trips B008.
-extend-immutable-calls = ["fastapi.Depends", "fastapi.params.Depends"]
+extend-immutable-calls = [
+    "fastapi.Depends",
+    "fastapi.params.Depends",
+    "app.core.dependencies.require_role",
+]
 
 [dependency-groups]
 dev = [
