@@ -24,6 +24,15 @@ async def get_current_user(
     return payload
 
 
+async def get_optional_current_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+) -> TokenPayload | None:
+    if credentials is None:
+        return None
+
+    return await get_current_user(credentials)
+
+
 def require_role(*roles: Role):
     def checker(current_user: TokenPayload = Depends(get_current_user)) -> TokenPayload:
         if current_user.role not in roles:
