@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 # import every model module so its table registers on Base.metadata --
 # autogenerate can only see tables that have actually been imported.
 import app.events.model  # noqa: F401
+import app.ticket_types.model  # noqa: F401
 import app.users.model  # noqa: F401
 import app.venues.model  # noqa: F401
 from alembic import context
