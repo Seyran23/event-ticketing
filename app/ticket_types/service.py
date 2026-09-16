@@ -102,9 +102,33 @@ async def reserve_inventory(db: AsyncSession, ticket_type_id: UUID, quantity: in
         raise NotFoundError("Ticket type not found.")
 
     if ticket_type.available_quantity < quantity:
-        raise SoldOutError(f"Only {ticket_type.available_quantity} left, requested {quantity}.")
+        raise SoldOutError(
+            f"{ticket_type.name}: only {ticket_type.available_quantity} left, "
+            f"requested {quantity}.",
+            details={
+                "ticket_type_id": str(ticket_type.id),
+                "available_quantity": ticket_type.available_quantity,
+                "requested_quantity": quantity,
+            },
+        )
 
     ticket_type = await repo.update(
         db, ticket_type, {"available_quantity": ticket_type.available_quantity - quantity}
     )
+    return ticket_type
+
+
+async def release_inventory(db: AsyncSession, ticket_type_id: UUID, quantity: int) -> TicketType:
+    if quantity <= 0:
+        raise ValueError("quantity must be a positive integer.")
+
+    ticket_type = await repo.get_by_id_for_update(db, ticket_type_id)
+    if ticket_type is None:
+        raise NotFoundError("Ticket type not found.")
+
+    new_available = ticket_type.available_quantity + quantity
+    if new_available > ticket_type.total_quantity:
+        raise ValidationError("Cannot release more than total_quantity.")
+
+    ticket_type = await repo.update(db, ticket_type, {"available_quantity": new_available})
     return ticket_type

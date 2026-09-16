@@ -23,6 +23,14 @@ async def list_by_event(db: AsyncSession, event_id: UUID) -> list[TicketType]:
     return list(result.scalars().all())
 
 
+async def list_by_ids(db: AsyncSession, ticket_type_ids: list[UUID]) -> list[TicketType]:
+    if not ticket_type_ids:
+        return []
+
+    result = await db.execute(select(TicketType).where(TicketType.id.in_(ticket_type_ids)))
+    return list(result.scalars().all())
+
+
 async def create(
     db: AsyncSession,
     event_id: UUID,
