@@ -14,10 +14,8 @@ async def app_error_handler(request: Request, exc: Exception) -> JSONResponse:
     logger.warning(
         "%s %s -> %s %s", request.method, request.url.path, exc.status_code, exc.error_code
     )
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"error_code": exc.error_code, "message": exc.message},
-    )
+    content = {"error_code": exc.error_code, "message": exc.message, **(exc.details or {})}
+    return JSONResponse(status_code=exc.status_code, content=content)
 
 
 async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:

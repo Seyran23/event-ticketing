@@ -1,11 +1,15 @@
+from typing import Any
+
+
 class AppError(Exception):
     """An unexpected error occurred."""
 
     status_code: int = 500
     error_code: str = "internal_error"
 
-    def __init__(self, message: str | None = None):
+    def __init__(self, message: str | None = None, details: dict[str, Any] | None = None):
         self.message = message or self.__class__.__doc__ or "An error occurred"
+        self.details = details
         super().__init__(self.message)
 
 
